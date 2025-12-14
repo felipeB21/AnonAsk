@@ -18,10 +18,15 @@ export function AnswerForm({ questionId }: { questionId: string }) {
     setError(null);
 
     try {
-      await api.ask({ questionId }).answer.post({
+      const res = await api.ask({ questionId }).answer.post({
         content: value,
       });
+      if (res.error) {
+        const message = res.error.value?.message ?? "Invalid input";
 
+        setError(message);
+        return;
+      }
       setSent(true);
       setValue("");
     } catch {

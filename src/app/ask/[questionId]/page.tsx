@@ -2,8 +2,10 @@
 import { api } from "@/lib/client";
 import { cookies } from "next/headers";
 import { AnswerForm } from "@/components/answer-form";
-import { format } from "date-fns";
-import Link from "next/link";
+import { Providers } from "@/components/provider";
+import UseAnswer from "@/hooks/use-answer";
+import HomeLink from "@/components/home-link";
+import { redirect } from "next/navigation";
 
 export default async function AskPage({
   params,
@@ -24,36 +26,27 @@ export default async function AskPage({
     },
   });
 
-  if (!data) return;
+  if (!data) redirect("/");
 
   return (
-    <div className="flex flex-col justify-center items-center mt-20">
-      <Link href={"/"}>
-        <h1 className="text-xl font-bold">AnonAsk</h1>
-      </Link>
-      <h1 className="text-5xl font-semibold">{data.question}</h1>
-      {data.role === "owner" ? (
-        <div className="flex flex-col items-center justify-center h-[75dvh]">
-          {data.answers?.length === 0 ? (
-            <p>No answers yet.</p>
-          ) : (
-            <ul className="border">
-              {data.answers?.map((a) => (
-                <li key={a.id}>
-                  <div className="flex items-center justify-between">
-                    <p>{a.content}</p>
-                    <p className="text-xs text-stone-700">
-                      {format(a.createdAt, "HH:mm")}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+    <Providers>
+      <div className="flex flex-col justify-center items-center gap-20 mt-20">
+        <div className="flex flex-col items-center">
+          <HomeLink />
+          <h1 className="text-7xl font-semibold mt-5">{data.question}</h1>
         </div>
-      ) : (
-        <AnswerForm questionId={questionId} />
-      )}
-    </div>
+        {data.role === "owner" ? (
+          <div className="flex flex-col items-center justify-center">
+            {data.answers?.length === 0 ? (
+              <p className="text-stone-700 mt-20">No answers yet.</p>
+            ) : (
+              <UseAnswer questionId={data.questionId as string} />
+            )}
+          </div>
+        ) : (
+          <AnswerForm questionId={questionId} />
+        )}
+      </div>
+    </Providers>
   );
 }

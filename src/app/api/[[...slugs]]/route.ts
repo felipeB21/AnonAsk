@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import z from "zod";
 import { authMiddleware } from "./auth";
 import { cors } from "@elysiajs/cors";
+import { realtime } from "@/lib/realtime";
 
 const Q_TTL_SECONDS = 60 * 60 * 24;
 
@@ -56,13 +57,16 @@ export const ask = new Elysia({ prefix: "/ask" })
       if (auth.role === "owner") {
         const answers = await redis.lrange<{
           id: string;
+          questionId: string;
           content: string;
           createdAt: number;
+          sender: string;
         }>(`answers:${auth.questionId}`, 0, -1);
 
         return {
           role: "owner",
           question: auth.question,
+          questionId: auth.questionId,
           answers: answers.map((a) => ({
             ...a,
           })),
@@ -87,14 +91,18 @@ export const ask = new Elysia({ prefix: "/ask" })
         set.status = 403;
         return { error: "Owner cannot answer own question" };
       }
-
+      const sender = `anon-${nanoid(5)}`;
       const answer = {
         id: nanoid(),
+        sender,
         content: body.content,
         createdAt: Date.now(),
       };
 
       await redis.rpush(`answers:${auth.questionId}`, JSON.stringify(answer));
+      await realtime
+        .channel(auth.questionId)
+        .emit("answer.content", answer.content);
       await redis.expire(`answers:${auth.questionId}`, Q_TTL_SECONDS);
       return { ok: true };
     },
@@ -103,7 +111,7 @@ export const ask = new Elysia({ prefix: "/ask" })
         questionId: z.string(),
       }),
       body: z.object({
-        content: z.string().min(1).max(300),
+        content: z.string().min(2).max(200),
       }),
     }
   );

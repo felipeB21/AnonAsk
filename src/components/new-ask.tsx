@@ -28,9 +28,7 @@ export default function NewAsk() {
         setError(message);
         return;
       }
-      console.log(res);
 
-      // success
       push(res.data.publicUrl);
       setQuestion("");
       setSuccess(true);
