@@ -21,6 +21,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "elysia": "^1.4.19",
+    "nanoid": "^5.1.6",
     "next": "16.0.10",
     "nextjs-toploader": "^3.9.17",
     "react": "19.2.1",
