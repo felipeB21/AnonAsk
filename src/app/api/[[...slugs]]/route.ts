@@ -11,7 +11,7 @@ const Q_TTL_SECONDS = 60 * 60 * 24;
 export const ask = new Elysia({ prefix: "/ask" })
   .use(
     cors({
-      origin: "http://localhost:3000",
+      origin: process.env.NEXT_PUBLIC_APP_URL || "localhost:3000",
       credentials: true,
     })
   )

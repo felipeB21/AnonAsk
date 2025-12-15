@@ -1,6 +1,5 @@
 "use client";
 
-import AnonAvatar from "@/components/avatar";
 import SpinnerClient from "@/components/spinner";
 import { api } from "@/lib/client";
 import { useRealtime } from "@/lib/realtime-client";
@@ -12,7 +11,6 @@ export default function UseAnswer({ questionId }: { questionId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ✅ estado DERIVADO (no useEffect, no setState)
   const openId = searchParams.get("answer");
 
   const { data, refetch, isLoading } = useQuery({
@@ -43,7 +41,6 @@ export default function UseAnswer({ questionId }: { questionId: string }) {
 
   return (
     <>
-      {/* LISTA */}
       <ul className="flex flex-col gap-4 p-3">
         {data?.answers?.map((a) => (
           <li
@@ -53,29 +50,27 @@ export default function UseAnswer({ questionId }: { questionId: string }) {
                        bg-linear-to-r from-violet-600 to-indigo-600 p-4 shadow-sm
                        hover:scale-[1.01] transition"
           >
-            <div className="flex gap-3">
-              <AnonAvatar />
-
-              <div className="flex flex-col gap-1 w-full">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold text-sm text-orange-300">
-                    {a.sender}
-                  </p>
-                  <span className="text-xs text-stone-300">
-                    {format(new Date(a.createdAt), "HH:mm")}
-                  </span>
-                </div>
-
-                <p className="text-sm text-stone-50 leading-relaxed wrap-break-words">
-                  {a.content}
+            <div className="flex flex-col gap-1 w-[300px]">
+              <div className="flex items-center justify-between">
+                <p className="font-semibold text-sm text-orange-300">
+                  {a.sender}
                 </p>
+                <span
+                  className="text-xs text-stone-300"
+                  suppressHydrationWarning
+                >
+                  {format(new Date(a.createdAt), "HH:mm")}
+                </span>
               </div>
+
+              <p className="text-sm text-stone-50 leading-relaxed wrap-break-words">
+                {a.content}
+              </p>
             </div>
           </li>
         ))}
       </ul>
 
-      {/* MODAL */}
       {openId && (
         <div
           className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center"
@@ -104,7 +99,10 @@ export default function UseAnswer({ questionId }: { questionId: string }) {
                     {a.content}
                   </p>
 
-                  <p className="text-xs text-zinc-500 mt-4">
+                  <p
+                    className="text-xs text-zinc-500 mt-4"
+                    suppressHydrationWarning
+                  >
                     {format(new Date(a.createdAt), "dd/MM/yyyy HH:mm")}
                   </p>
                 </div>

@@ -32,7 +32,6 @@ export default function NewAsk() {
       push(res.data.publicUrl);
       setQuestion("");
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 2000);
     } finally {
       setLoading(false);
     }

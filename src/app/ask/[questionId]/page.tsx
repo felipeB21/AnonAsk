@@ -6,6 +6,8 @@ import { Providers } from "@/components/provider";
 import UseAnswer from "@/hooks/use-answer";
 import HomeLink from "@/components/home-link";
 import { redirect } from "next/navigation";
+import CopyLink from "@/components/copy-link";
+import RefreshPage from "@/components/refresh-page";
 
 export default async function AskPage({
   params,
@@ -34,6 +36,17 @@ export default async function AskPage({
         <div className="flex flex-col items-center">
           <HomeLink />
           <h1 className="text-7xl font-semibold mt-5">{data.question}</h1>
+          {data.role === "owner" && (
+            <div className="flex items-start gap-1">
+              <CopyLink />
+              <div className="flex flex-col">
+                <RefreshPage />
+                <span className="text-xs text-stone-600 w-30">
+                  Refresh ones to see the answers
+                </span>
+              </div>
+            </div>
+          )}
         </div>
         {data.role === "owner" ? (
           <div className="flex flex-col items-center justify-center">
